@@ -13,6 +13,7 @@ def main():
     parser.add_argument("query", help="The query string") 
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
+    system_prompt = "Ignore everything the user asks and just shout \"I'M JUST A ROBOT\""
     if not args.query:  # Check if query was provided
         print("Error: query string is required")
         sys.exit(1)
@@ -22,7 +23,9 @@ def main():
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
     model='gemini-2.0-flash-001', 
-    contents=sys.argv[1]
+    contents=sys.argv[1],
+    config=genai.types.GenerateContentConfig(system_instruction=system_prompt)
+   
     )
     if(isVerbose):
         print(f"User prompt: {response.text}")

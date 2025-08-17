@@ -1,4 +1,5 @@
 import os
+from config import MAX_CHARS
 
 def get_files_info(working_directory, directory="."):
     
@@ -28,11 +29,52 @@ def get_file_content(working_directory, file_path):
     full_path = os.path.join(working_directory, file_path)
     abs_working_dir = os.path.abspath(working_directory)
     abs_full_path = os.path.abspath(full_path)
+    
+    if os.path.isfile(abs_full_path) != True:
+        return f'Error: File not found or is not a regular file: "{file_path}"'
+    
     if not abs_full_path.startswith(abs_working_dir):
         return f'Error: Cannot read  "{file_path}" as it is outside the permitted working directory'
     
-    if not os.path.isdir(abs_full_path):
-        return f'Error: "{abs_full_path}" is not a directory'
+    #print(f"Test: {abs_full_path}")
+
+    file_content_string =""
+    try:
+        if(os.stat(abs_full_path).st_size > MAX_CHARS):
+            print(f'File "{file_path}" truncated at 10000 characters')
+        with open(abs_full_path, "r") as f:
+            file_content_string = f.read(MAX_CHARS)
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        raise
+    
+    return file_content_string
+
+def write_file(working_directory, file_path, content):
+
+    full_path = os.path.join(working_directory, file_path)
+    abs_working_dir = os.path.abspath(working_directory)
+    abs_full_path = os.path.abspath(full_path)
+
+
+
+    if not abs_full_path.startswith(abs_working_dir):
+        return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
+    
+    getDirName = os.path.dirname(abs_full_path)
+    os.makedirs(getDirName, exist_ok=True)
+    
+    try:
+
+        with open(abs_full_path, "w") as f:
+            f.write(content)
+        return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
+    
+    except Exception as err:
+        return(f"Error: {err=}, {type(err)=}")
+        raise
+ 
+
     
     #Todo Finish stuff later fill out the rest of the function to CH2l3
 
