@@ -1,1 +1,3 @@
 MAX_CHARS = 10000
+WORKING_DIR = "./calculator"
+AI_LOOP_LIMIT = 20
